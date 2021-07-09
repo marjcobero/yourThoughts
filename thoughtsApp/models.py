@@ -2,7 +2,10 @@ from django.db import models
 import re
 import bcrypt
 
-# Create your models here.
+
+# Create your models here..
+
+
 class UserManager(models.Manager):
     def reg_validator(self, reqPOST):
         errors = {}
@@ -37,24 +40,20 @@ class UserManager(models.Manager):
             errors['password'] = "Email and password must match"
         return errors
 
+
 class User(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     objects = UserManager()
-    
-class ThoughtManager(models.Manager):
-    def thought_validator(self, reqPOST):
-        errors = {}
-        if len(reqPOST['thought']) < 1:
-            errors['thought'] = "Post must not be blank"
-        return errors
 
-class Thought(models.Model):
-    thought = models.TextField()
-    user = models.ForeignKey(User, related_name="created_thoughts", on_delete=models.CASCADE)
-    user_likes = models.ManyToManyField(User, related_name='liked_posts')
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    objects = ThoughtManager()
+class Wall(models.Model):
+    message = models.TextField()
+    poster = models.ForeignKey(User, related_name="user_messages", on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    comment = models.TextField()
+    poster = models.ForeignKey(User, related_name="user_comments", on_delete=models.CASCADE)
+    wall_message = models.ForeignKey(Wall, related_name="post_comments", on_delete=models.CASCADE)
+

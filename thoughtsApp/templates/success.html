@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Welcome</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        {% load static %}
+        <link rel="stylesheet" href="{% static '/style.css' %}">
+    </head>
+    <body>
+        <div class="wrap">
+            <h1>Welcome to {{user.first_name}}'s Wall!</h1>
+            <div id='write'>
+                <h2>Write a Post:</h2>
+                <form action="/post_message" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="message">
+                    <input type="submit" value="post">
+                </form>
+            </div>
+            <div id='posts'>
+                {% for post in all_messages %}
+                <blockquote class="blockquote">
+                    <p class='post'>{{ post.message }}</p>
+                    <p>By: <a href="/profile/{{post.poster.id}}">{{post.poster.first_name}} {{post.poster.last_name}}</p>
+                </blockquote>
+                <div class='one_post'>
+                    <a href="/like/{{post.user_id}}">Like Post</a>
+                    <p>{{ post.user_likes.count }}</p>
+                    <form action="/post_comment/{{post.id}}" method="POST">
+                        {% csrf_token %}
+                        Comment: <input type="text" name="comment">
+                        <input type="submit" value="submit">
+                    </form>
+                    {% for comment in post.post_comments.all %}
+                        <p>{{ comment.comment }}</p>
+                        <p>poster: {{ comment.poster.first_name }} {{ comment.poster.last_name }}</p>
+                        <a href="/delete_comment/{{comment.id}}">Delete</a>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            <a class="btn btn-primary" href="/logout" role="button">Go back</a>
+    </div>
+</html>

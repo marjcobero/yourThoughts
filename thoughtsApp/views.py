@@ -5,8 +5,22 @@ import bcrypt
 
 # Create your views here.
 
+
 def index(request):
-    return render(request, 'register.html')
+    request.session.flush()
+    return render(request, 'main.html')
+
+
+def success(request):
+    if 'user_id' not in request.session:
+        return redirect('/')
+    the_user = User.objects.filter(id=request.session['user_id'])
+    context = {
+        'user': User.objects.get(id=request.session['user_id']), 
+        'all_messages': Wall.objects.all()
+    }
+    return render(request, 'success.html', context)
+
 
 def register(request):
     if request.method == "POST":
@@ -23,8 +37,9 @@ def register(request):
             password = hashed_pw,
         )
         request.session['user_id'] = new_user.id
-        return redirect('/thoughts')
+        return redirect('/success')
     return redirect('/')
+
 
 def login(request):
     if request.method == "POST":
@@ -34,57 +49,58 @@ def login(request):
                 messages.error(request, value)
                 return  redirect('/')
     if request.method == 'POST':
-        the_user = User.objects.get(email=request.POST['email'])
-        if bcrypt.checkpw(request.POST['password'].encode(), the_user.password.encode()):
-            print(request.method)
-            request.session['user_id'] = the_user.id
-            request.session['greeting'] = the_user.first_name
-            return redirect('/thoughts')
+        the_user = User.objects.filter(email = request.POST['email'])
+        if the_user:
+            logged_user = the_user[0]
+            if bcrypt.checkpw(request.POST['password'].encode(), logged_user.password.encode()):
+                print(request.method)
+                request.session['user_id'] = logged_user.id
+                return redirect('/success')
         messages.error(request, "Email or Password incorrect")
     return redirect('/')
+
 
 def logout(request):
     request.session.flush()
     return redirect('/')
 
-def show_all(request):
-    if "user_id" not in request.session:
-        return redirect('/')
-    else:
-        context = {
-            'all_thoughts': Thought.objects.all(),
-            'the_user': User.objects.get(id=request.session['user_id'])
-        }
-        return render(request, 'allthoughts.html', context)
 
-def create_thoughts(request):
-    errors = Thought.objects.thought_validator(request.POST)
-    if len(errors) > 0:
-        for key, value in errors.items():
-            messages.error(request, value)
-        return redirect('/thoughts')
-    else:
-        user = User.objects.get(id=request.session['user_id'])
-        thought = Thought.objects.create(
-            thought=request.POST['thought'],
-            user=User.objects.get(id=request.session['user_id'])
-        )
-        return redirect('/thoughts')
+def post_message(request):
+    Wall.objects.create(message=request.POST['message'],poster=User.objects.get(id=request.session['user_id']))
+    return redirect('/success')
 
-def show_one(request):
+
+def post_comment(request, user_id):
+    poster = User.objects.get(id=request.session['user_id'])
+    message = Wall.objects.get(id=user_id)
+    Comment.objects.create(comment=request.POST['comment'], poster=poster, wall_message= message)
+    return redirect('/success')
+
+
+def profile(request, user_id):
     context = {
-        'thought': Thought.objects.get(id=request.session['user_id']),
-        'the_user': User.objects.get(id=request.session['user_id']),
+        'user': User.objects.get(id= user_id)
     }
-    return render(request, "thought.html", context)
+    return render(request, 'profile.html', context)
+
 
 def like(request, user_id):
-    liked_posts = Thought.objects.get(id=user_id)
+    liked_message = Wall.objects.get(id= user_id)
     user_liking = User.objects.get(id=request.session['user_id'])
-    liked_posts.user_likes.add(user_liking)
-    return redirect('/thoughts')
+    liked_message.user_likes.add(user_liking)
+    return redirect('/success')
 
-def delete(request, user_id):
-    remove = Thought.objects.get(id=user_id)
-    remove.delete()
-    return redirect('/thoughts')
+
+def delete_comment(request, user_id):
+    destroyed = Comment.objects.get(id= user_id)
+    destroyed.delete()
+    return redirect('/success')
+
+
+def edit(request, user_id):
+    edit_user = User.objects.get(id= user_id)
+    edit_user.first_name = request.POST['first_name']
+    edit_user.last_name = request.POST['last_name']
+    edit_user.email = request.POST['email']
+    edit_user.save()
+    return redirect('/success')

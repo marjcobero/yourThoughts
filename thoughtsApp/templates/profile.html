@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>The Wall</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        {% load static %}
+        <link rel="stylesheet" href="{% static '/style.css' %}">
+    </head>
+    <body>
+        <h1>Hello {{user.first_name}} {{user.last_name}}</h1>
+        {% for post in user.user_messages.all %}
+            <p>{{post.message}}</p>
+        {% endfor %}
+    
+        {% for comment in user.user_comments.all %}
+            <p>{{comment.comment}}</p>
+        {% endfor %}
+    
+        <h2>Edit User Form:</h2>
+        <form action="/edit/{{ user.id }}" method="POST">
+            {% csrf_token %}
+            First Name: <input type="text" name="first_name" value="{{user.first_name}}">
+            Last Name: <input type="text" name="last_name" value="{{user.last_name}}">
+            Email: <input type="email" name='email' value="{{user.email}}">
+            <input type="submit">
+        </form>
+    </body>
+</html>
