@@ -59,6 +59,8 @@ def login(request):
         messages.error(request, "Email or Password incorrect")
     return redirect('/')
 
+def login_page(request):
+    return render(request, 'login_page.html')
 
 def logout(request):
     request.session.flush()
