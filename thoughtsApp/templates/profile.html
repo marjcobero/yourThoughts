@@ -4,11 +4,21 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>The Wall</title>
+
+        <!-- BOOTSTRAP -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
         {% load static %}
+
+        <!-- CSS -->
         <link rel="stylesheet" href="{% static '/style.css' %}">
+<style>
+
+</style>
+
     </head>
+
     <body>
+        <!-- Start  -->
         <div class="container rounded bg-white mt-5">
             <div class="row">
                 <div class="col-md-4 border-right">
@@ -45,7 +55,7 @@
         </div>
 
 
-
+        
 
         <h1>Hello {{user.first_name}} {{user.last_name}}</h1>
         {% for post in user.user_messages.all %}
