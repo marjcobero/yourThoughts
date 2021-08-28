@@ -19,7 +19,7 @@ def success(request):
         'user': User.objects.get(id=request.session['user_id']), 
         'all_messages': Wall.objects.all()
     }
-    return render(request, 'success.html', context)
+    return render(request, 'homepage.html', context)
 
 
 def register(request):
@@ -47,7 +47,7 @@ def login(request):
         if len(errors) > 0:
             for key, value in errors.items():
                 messages.error(request, value)
-                return  redirect('/')
+                return  redirect('/login_page')
     if request.method == 'POST':
         the_user = User.objects.filter(email = request.POST['email'])
         if the_user:
@@ -65,7 +65,6 @@ def login_page(request):
 def logout(request):
     request.session.flush()
     return redirect('/')
-
 
 def post_message(request):
     Wall.objects.create(message=request.POST['message'],poster=User.objects.get(id=request.session['user_id']))

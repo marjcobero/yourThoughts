@@ -37,7 +37,7 @@ class UserManager(models.Manager):
         if len(reqPOST['password']) < 8:
             errors['password'] = "An eight character password must be entered"
         elif bcrypt.checkpw(reqPOST['password'].encode(),existing_user[0].password.encode()) != True:
-            errors['password'] = "Email and password must match"
+            errors['password'] = "Email or pasword is incorrect"
         return errors
 
 

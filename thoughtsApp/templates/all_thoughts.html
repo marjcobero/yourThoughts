@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{{user.first_name}} Profile</title>
+
+        <!-- BOOTSTRAP -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        {% load static %}
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="{% static '/style.css' %}">
+
+<style type="text/css">
+body {
+     color: #000;
+     overflow-x: hidden;
+     height: 100%;
+     background-color: #A6DCEF;
+     background-repeat: no-repeat
+ }
+
+ .card {
+     border-radius: 10px;
+     width: 630px;
+     height: 310px;
+     padding: 26px;
+     margin-top: 10px;
+     margin-bottom: 50px
+ }
+
+ .profile-pic {
+     width: 60px;
+     height: 60px;
+     border-radius: 50%;
+     object-fit: contain;
+     background-color: #E0E0E0
+ }
+
+ textarea {
+     padding: 15px 20px;
+     border-radius: 10px;
+     box-sizing: border-box;
+     color: #616161;
+     border: 1px solid #F5F5F5;
+     font-size: 16px;
+     letter-spacing: 1px;
+     height: 120px;
+     width: 100%
+ }
+
+ textarea:focus {
+     -moz-box-shadow: none;
+     -webkit-box-shadow: none;
+     box-shadow: none;
+     border: 1px solid #DDF3F5;
+     outline-width: 0 
+ }
+
+ select {
+     border: none;
+     font-size: 15px;
+     background-color: #fff 
+ }
+
+ select:focus {
+     -moz-box-shadow: none;
+     -webkit-box-shadow: none;
+     box-shadow: none ;
+     outline-width: 0 
+ }
+
+ ::placeholder {
+     color: #BDBDBD
+ }
+
+ :-ms-input-placeholder {
+     color: #BDBDBD
+ }
+
+ ::-ms-input-placeholder {
+     color: #BDBDBD
+ }
+
+ .btn-success {
+     border-radius: 50px;
+     padding: 4px 40px
+ }
+
+ .options {
+     font-size: 23px;
+     color: #757575;
+     cursor: pointer
+ }
+
+ .options:hover {
+     color: #000
+ }
+
+
+
+
+</style>
+<!-- CSS end -->
+
+    </head>
+    <body>
+        <!-- greeting -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="wrap">
+
+            <div id='posts'>
+                {% for post in all_messages %}
+                <blockquote class="blockquote">
+                    <p class='post'>{{ post.message }}</p>
+                    <p>By: <a href="/profile/{{post.poster.id}}">{{post.poster.first_name}} {{post.poster.last_name}}</p>
+                </blockquote>
+                <div class='one_post'>
+                    <a href="/like/{{post.user_id}}">Like Post</a>
+                    <p>{{ post.user_likes.count }}</p>
+                    <form action="/post_comment/{{post.id}}" method="POST">
+                        {% csrf_token %}
+                        Comment: <input type="text" name="comment">
+                        <input type="submit" value="submit">
+                    </form>
+                    {% for comment in post.post_comments.all %}
+                        <p>{{ comment.comment }}</p>
+                        <p>poster: {{ comment.poster.first_name }} {{ comment.poster.last_name }}</p>
+                        <a href="/delete_comment/{{comment.id}}">Delete</a>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            <a class="btn btn-primary" href="/logout" role="button">Go back</a>
+    </div>
+</html>
