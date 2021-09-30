@@ -91,6 +91,12 @@ def like(request, user_id):
     liked_message.user_likes.add(user_liking)
     return redirect('/success')
 
+def delete_post(request, user_id):
+    if 'user_id' not in request.session:
+        return redirect('/')
+    post_to_delete = Wall.objects.get(id=user_id)
+    post_to_delete.delete()
+    return redirect('/success')
 
 def delete_comment(request, user_id):
     destroyed = Comment.objects.get(id= user_id)

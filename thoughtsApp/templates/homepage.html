@@ -27,7 +27,6 @@ h3 {
 }
 
  .card {
-    margin-top: 75px;
     width: 500em;
     height: auto;
     background: #1A2226;
@@ -173,6 +172,31 @@ h3 {
 .widget .action { margin-top:5px; }
 .widget .comment-text { font-size: 12px; }
 .widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
+
+.post {
+    color: white;
+}
+
+.like {
+    color: white;
+}
+
+#submit-post-button {
+    margin-top: 25px;
+}
+
+.wrapper {
+    margin: 1em;
+    padding: 1em;
+}
+
+.comments {
+    padding: 1em;
+}
+
+a {
+    color: #6930C3;
+}
 </style>
 <!-- CSS end -->
 
@@ -187,11 +211,10 @@ h3 {
             {% endfor %}
         </ul>
         {% endif %}
-        <div class="wrap">
         <!-- end validations -->
 
         <!-- write post -->
-        <div id='write'>
+        <div class="wrapper">
 
             <form action="/post_message" method="POST">
             {% csrf_token %}
@@ -199,9 +222,9 @@ h3 {
                     <div class="row d-flex justify-content-center">
                         <div class="card">
                             
-                            <div class="row px-3"> <img class="profile-pic mr-3" src="https://i.imgur.com/6tPhTUn.jpg">
+                            <div class="row px-3"> <img class="profile-pic mr-3" src="https://i.imgur.com/V4RclNb.png">
                                 <div class="flex-column">
-                                    <h3 class="mb-0 font-weight-normal">Nice to see you, {{user.first_name}} </h3> 
+                                    <h3 class="mb-0 font-weight-normal">Nice to see you, {{user.first_name}}! </h3> 
                                 </div>
                             </div>
 
@@ -220,81 +243,67 @@ h3 {
                 </div>
             </form>
 
-        </div>
         <!-- write post end -->
-
-        <div id='posts'>
 
             <!-- posts -->
             {% for post in all_messages %}
-            <div class="container mt-5">
-                <div class="d-flex justify-content-center row">
-                    <div class="col-md-8">
-                        <div class="d-flex flex-column comment-section">
+            <div class="container px-4 py-5 mx-auto">
+                <div class="row d-flex justify-content-center">
+                    <div class="card">
+                        
+                        <div class="row px-3"> <img class="profile-pic mr-3" src="https://i.imgur.com/V4RclNb.png">
+                            <div class="flex-column">
+                                <h3 class="mb-0 font-weight-normal"> {{post.poster.first_name}} {{post.poster.last_name}}</h3> 
+                            </div>
+                        </div>
 
-                            <div class="bg-white p-2">
-                                <div class="d-flex flex-row user-info"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40">
-                                    <p><a href="/profile/{{post.poster.id}}">{{post.poster.first_name}} {{post.poster.last_name}}</p>
-                                </div>
+                        <div class="mt-2">
+                            <blockquote class="blockquote">
+                                <p class='post'>{{ post.message }}</p>
+                            </blockquote>
+                        </div>
 
-                                <div class="mt-2">
-                                    <blockquote class="blockquote">
-                                        <p class='post'>{{ post.message }}</p>
-                                    </blockquote>
-                                </div>
+                        <div class="d-flex flex-row fs-12">
+                            <p>{{ post.user_likes.count }}</p>
+                            <div class="like p-2 cursor"><i class="fa fa-thumbs-up"></i><span class="ml-1"><a href="/like/{{post.user_id}}">Like</a></span>
                             </div>
 
-                            <div class="bg-white">
-                                <div class="d-flex flex-row fs-12">
-                                    <div class="like p-2 cursor"></i><span class="ml-1"><a href="/like/{{post.user_id}}"><img src="https://img.icons8.com/ios-filled/20/000000/thumb-up--v1.png"/></a>
-                                        <p>{{ post.user_likes.count }}</p></span></div>
-                                    <div class="like p-2 cursor"><i class="fa fa-commenting-o"></i><span class="ml-1">Comment</span></div>
-                                    <div class="like p-2 cursor"><i class="fa fa-share"></i><span class="ml-1">Share</span></div>
-                                </div>
+                            <div class="like p-2 cursor"><i class="fa fa-share"></i><span class="ml-1"><a href="/post_comment/{{post.user_id}}">Share</a></span>
                             </div>
-
-                            <div class="bg-light p-2">
-                                <form action="/post_comment/{{post.id}}" method="POST">
-                                {% csrf_token %}
-                                    <div class="d-flex flex-row align-items-start"><img class="rounded-circle"  width="40"><textarea class="form-control ml-1 shadow-none textarea" name="comment"></textarea></div>
-                                    <div class="mt-2 text-right"><button class="btn btn-primary btn-sm shadow-none" type="submit" value="submit" >Post comment</button>
-                                    <button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
-                                </form>
+                        </div>
+                        
+                        <form action="/post_comment/{{post.id}}" method="POST">
+                            {% csrf_token %}
+                            <div class="row px-3 form-group"> 
+                                <textarea name="comment" type="text" class="text-muted  mt-4 mb-3"></textarea> 
                             </div>
-
-                            <div class="panel-heading">
-                                <span class="glyphicon glyphicon-comment"></span>
-                                <h3 class="panel-title">
-                                    Recent Comments</h3>
+                            <div id="submit-post-button" class="d-flex flex-row fs-12">
+                                <button type="submit" class="btn btn-success" value="post">Post comment</button>
+                                <button type="button" class="btn btn-success" value="post">Submit</button>
                             </div>
+                        </form>
 
-                            {% for comment in post.post_comments.all %}
-                            <div class="container">
-                                <div class="row">
-                                    <div class="panel panel-default widget">
-                                            
-                                        <div class="panel-body">
-                                            <ul class="list-group">
-                                                <li class="list-group-item">
-                                                    <div class="row">
-                                                        <div class="comment-text">
-                                                            <blockquote class="blockquote">
-                                                                <p>poster: <a href="/profile/{{post.poster.id}}">{{ comment.poster.first_name }} {{ comment.poster.last_name }}</p></a>
-                                                                <h4>{{ comment.comment }}</h4>
-                                                                <a href="/delete_comment/{{comment.id}}">Delete</a>
-                                                            </blockquote>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-comment"></span>
+                            <h3 class="panel-title">
+                                Recent Comments</h3>
+                        </div>
 
+                        {% for comment in post.post_comments.all %}
+                        <div class="comments">
+                            <blockquote class="blockquote">
+                                <div class="row px-3"> <img class="profile-pic mr-3" src="https://i.imgur.com/V4RclNb.png">
+                                    <div class="flex-column">
+                                        <h3 class="mb-0 font-weight-normal"> {{ comment.poster.first_name }} {{ comment.poster.last_name }}</h3> 
                                     </div>
                                 </div>
-                            </div>
-                            {% endfor %}
-
+                                <p class='post'>{{ comment.comment }}</p>
+                                <div id="submit-post-button" class="d-flex flex-row fs-12">
+                                    <button type="submit" class="btn btn-success" value="post"><a href="/delete_comment/{{comment.id}}">Delete</a></button>
+                                </div>
+                            </blockquote>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -304,9 +313,11 @@ h3 {
             <!-- extra -->
 
                 {% for post in all_messages %}
+                
                 <blockquote class="blockquote">
                     <p class='post'>{{ post.message }}</p>
                     <p>By: <a href="/profile/{{post.poster.id}}">{{post.poster.first_name}} {{post.poster.last_name}}</p>
+                        <a href="/delete_post/{{post.id}}">Delete</a>
                 </blockquote>
 
                 <div class='one_post'>
@@ -328,6 +339,11 @@ h3 {
                 </div>
                 {% endfor %}
             </div>
+
+                
             <a class="btn btn-primary" href="/logout" role="button">Go back</a>
+
+
+        </div>
     </div>
 </html>

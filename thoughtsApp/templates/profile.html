@@ -58,9 +58,19 @@
         
 
         <h1>Hello {{user.first_name}} {{user.last_name}}</h1>
+        <tbody>
         {% for post in user.user_messages.all %}
-            <p>{{post.message}}</p>
+            <td><p>{{post.message}}</p></td>
+            <td>
+                {%if current_user.id == post.user.id %}
+                <form action="/delete_post/{{user.id}}" href="">
+                {% csrf_token %}
+                    <input type="submit" value="Delete {{post.user_messages}}">
+                </form>
+                {% endif %}
+            </td>
         {% endfor %}
+        </tbody>
     
         {% for comment in user.user_comments.all %}
             <p>{{comment.comment}}</p>
